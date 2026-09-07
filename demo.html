@@ -1,0 +1,642 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Stonegate Farm — Demo</title>
+<meta name="apple-mobile-web-app-capable" content="yes"/>
+<meta name="mobile-web-app-capable" content="yes"/>
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent"/>
+<meta name="apple-mobile-web-app-title" content="Stonegate Farm"/>
+<meta name="application-name" content="Stonegate Farm"/>
+<meta name="theme-color" content="#102D3A"/>
+<meta name="msapplication-TileColor" content="#102D3A"/>
+<meta name="msapplication-TileImage" content="logo.png"/>
+<link rel="apple-touch-icon" href="logo.png"/>
+<link rel="apple-touch-icon" sizes="57x57" href="logo.png"/>
+<link rel="apple-touch-icon" sizes="72x72" href="logo.png"/>
+<link rel="apple-touch-icon" sizes="76x76" href="logo.png"/>
+<link rel="apple-touch-icon" sizes="114x114" href="logo.png"/>
+<link rel="apple-touch-icon" sizes="120x120" href="logo.png"/>
+<link rel="apple-touch-icon" sizes="144x144" href="logo.png"/>
+<link rel="apple-touch-icon" sizes="152x152" href="logo.png"/>
+<link rel="apple-touch-icon" sizes="167x167" href="logo.png"/>
+<link rel="apple-touch-icon" sizes="180x180" href="logo.png"/>
+<link rel="icon" type="image/png" sizes="192x192" href="logo.png"/>
+<link rel="icon" type="image/png" sizes="512x512" href="logo.png"/>
+<link rel="icon" type="image/png" href="logo.png"/>
+<link rel="shortcut icon" href="logo.png"/>
+<link rel="manifest" href="manifest.json"/>
+<link rel="canonical" href="https://megan471.github.io/stonegate-farm/"/>
+<script src="firebase-config.js"></script>
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}html,body{height:100%;}
+body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;background:#f8fafc;color:#1e293b;min-height:100vh;display:flex;justify-content:center;}
+.app{width:100%;max-width:520px;background:#fff;min-height:100vh;box-shadow:0 0 0 0.5px #e2e8f0;}
+button{font-family:inherit;cursor:pointer;border-radius:6px;border:0.5px solid #cbd5e1;background:transparent;color:#475569;font-size:13px;padding:5px 10px;}
+button:hover{background:#f1f5f9;}
+input,select,textarea{font-family:inherit;font-size:13px;border:0.5px solid #cbd5e1;border-radius:6px;padding:7px 10px;width:100%;outline:none;background:#fff;color:#1e293b;}
+input:focus,select:focus,textarea:focus{border-color:#93c5fd;box-shadow:0 0 0 2px #dbeafe;}
+.header{padding:1rem 1rem 0;}
+.header h1{font-size:17px;font-weight:600;}
+.header-sub{font-size:12px;color:#64748b;margin-top:2px;display:flex;align-items:center;gap:8px;}
+.owner-pills{display:flex;gap:6px;flex-wrap:wrap;margin:10px 0 12px;}
+.pill{font-size:12px;padding:4px 12px;border-radius:20px;cursor:pointer;border:0.5px solid #cbd5e1;}
+.tabs{display:grid;grid-template-columns:repeat(3,1fr);gap:4px;padding:8px 10px;background:#f1f5f9;border-bottom:1px solid #e2e8f0;}
+.tab{font-size:11px;padding:7px 4px;border:1px solid #e2e8f0;border-radius:0;background:#fff;white-space:nowrap;color:#64748b;cursor:pointer;text-align:center;font-weight:500;line-height:1.3;}
+.tab:hover{background:#E8F4F6;border-color:#B5D8DE;color:#2D6F7A;}
+.tab.active{background:#102D3A;color:#fff;border-color:#102D3A;font-weight:600;}
+.content{padding:1rem;}
+.card{background:#fff;border:0.5px solid #e2e8f0;border-radius:8px;padding:10px 14px;margin-bottom:8px;}
+.badge{font-size:11px;border-radius:10px;padding:1px 7px;display:inline-flex;align-items:center;}
+.modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,0.45);display:flex;align-items:center;justify-content:center;z-index:999;padding:1rem;}
+.modal{background:#fff;border:1px solid #e2e8f0;border-radius:12px;padding:1.5rem;width:100%;max-width:400px;max-height:85vh;overflow-y:auto;}
+.modal.wide{max-width:440px;}
+.avatar{border-radius:50%;display:inline-flex;align-items:center;justify-content:center;color:#fff;font-weight:600;flex-shrink:0;}
+.toast{position:fixed;top:12px;right:12px;z-index:9999;border-radius:8px;padding:10px 16px;font-size:13px;font-weight:500;max-width:280px;}
+.live{font-size:11px;}.live.ok{color:#059669;}.live.saving{color:#d97706;}
+.filters{display:flex;gap:8px;margin-bottom:12px;flex-wrap:wrap;align-items:center;}
+.filters select{width:auto;}
+.expense-row{border-radius:8px;padding:10px 12px;margin-bottom:8px;}
+.empty{text-align:center;padding:2rem 1rem;color:#94a3b8;font-size:14px;}
+.summary-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:16px;}
+.summary-card{border-radius:8px;padding:10px 14px;}
+.slip-thumb{width:52px;height:52px;object-fit:cover;border-radius:6px;border:0.5px solid #e2e8f0;cursor:pointer;flex-shrink:0;}
+.slip-upload-area{border:1.5px dashed #cbd5e1;border-radius:8px;padding:12px;text-align:center;cursor:pointer;background:#f8fafc;margin-bottom:4px;}
+.slip-upload-area:hover{border-color:#93c5fd;background:#eff6ff;}
+.lightbox{position:fixed;inset:0;background:rgba(0,0,0,0.88);z-index:9999;display:flex;align-items:center;justify-content:center;padding:20px;cursor:zoom-out;}
+.lightbox img{max-width:100%;max-height:90vh;border-radius:8px;}
+@media(max-width:500px){.card-actions{flex-wrap:wrap;}}
+
+.demo-banner{position:fixed;bottom:0;left:50%;transform:translateX(-50%);background:#D96B3B;color:#fff;font-size:11px;font-weight:600;padding:4px 16px;z-index:9998;letter-spacing:0.5px;text-transform:uppercase;}
+</style>
+</head>
+<body>
+<div class="demo-banner">Demo Version — bundlemedia.co.za</div>
+<div class="app" id="app">
+<div class="empty" style="padding:3rem"><div style="font-size:28px;margin-bottom:8px">&#x1F3A3;</div><p>Loading...</p></div>
+</div>
+<script>
+const OWNERS=[{id:"kevin",name:"James Mitchell",color:"#4F46E5"},{id:"steve",name:"Sarah Winters",color:"#0891B2"},{id:"brandon",name:"David Kruger",color:"#059669"},{id:"mark",name:"Lisa van den Berg",color:"#D97706"},{id:"graham",name:"Ryan Fourie",color:"#DC2626"},{id:"ralph",name:"Nicole Pretorius",color:"#7C3AED"}];
+const OID=["kevin","steve","brandon","mark","graham","ralph"];
+const DEFAULT_PINS={kevin:"1111",steve:"2222",brandon:"3333",mark:"4444",graham:"5555",ralph:"6666"};
+const ADMIN_ID="steve";
+const CATS=["general","fuel","groceries","labour","equipment","maintenance","other"];
+const HOLIDAYS={"01-01":"New Year's Day","03-21":"Human Rights Day","04-27":"Freedom Day","05-01":"Workers Day","06-16":"Youth Day","08-09":"Women's Day","09-24":"Heritage Day","12-16":"Day of Reconciliation","12-25":"Christmas","12-26":"Day of Goodwill"};
+const RAW=[[22,"2025-05-03","2025-05-10","2025-05-17","2025-05-24","2025-05-31","2025-06-07"],[23,"2025-06-14","2025-06-21","2025-06-28","2025-07-05","2025-07-12","2025-07-19"],[24,"2025-07-26","2025-08-02","2025-08-09","2025-08-16","2025-08-23","2025-08-30"],[25,"2025-09-06","2025-09-13","2025-09-27","2025-09-20","2025-10-04","2025-10-11"],[26,"2025-10-18","2025-10-25","2025-11-01","2025-11-08","2025-11-15","2025-11-22"],[27,"2025-11-29","2025-12-06","2025-12-13","2025-12-20","2025-12-27","2026-01-03"],[28,"2026-01-10","2026-01-17","2026-01-24","2026-01-31","2026-02-07","2026-02-14"],[29,"2026-02-21","2026-02-28","2026-03-07","2026-03-14","2026-03-21","2026-03-28"],[30,"2026-04-04","2026-04-25","2026-04-11","2026-04-18","2026-05-02","2026-05-09"],[31,"2026-05-16","2026-05-23","2026-05-30","2026-06-06","2026-06-13","2026-06-20"],[32,"2026-06-27","2026-07-04","2026-07-11","2026-07-18","2026-07-25","2026-08-01"],[33,"2026-08-08","2026-08-15","2026-08-22","2026-08-29","2026-09-05","2026-09-12"],[34,"2026-09-19","2026-09-26","2026-10-03","2026-10-10","2026-10-17","2026-10-24"],[35,"2026-10-31","2026-11-07","2026-11-14","2026-11-21","2026-11-28","2026-12-05"],[36,"2026-12-12","2026-12-19","2026-12-26","2027-01-02","2027-01-09","2027-01-16"],[37,"2027-01-23","2027-01-30","2027-02-06","2027-02-13","2027-02-20","2027-02-27"],[38,"2027-03-06","2027-03-13","2027-03-20","2027-03-27","2027-04-03","2027-04-10"],[39,"2027-04-17","2027-04-24","2027-05-01","2027-05-08","2027-05-15","2027-05-22"],[40,"2027-05-29","2027-06-05","2027-06-12","2027-06-19","2027-06-26","2027-07-03"],[41,"2027-07-10","2027-07-17","2027-07-24","2027-07-31","2027-08-07","2027-08-14"],[42,"2027-08-21","2027-08-28","2027-09-04","2027-09-11","2027-09-18","2027-09-25"],[43,"2027-10-02","2027-10-09","2027-10-16","2027-10-23","2027-10-30","2027-11-06"],[44,"2027-11-13","2027-11-20","2027-11-27","2027-12-04","2027-12-11","2027-12-18"],[45,"2027-12-25","2028-01-01","2028-01-08","2028-01-15","2028-01-22","2028-01-29"],[46,"2028-02-05","2028-02-12","2028-02-19","2028-02-26","2028-03-04","2028-03-11"],[47,"2028-03-18","2028-03-25","2028-04-01","2028-04-08","2028-04-15","2028-04-22"],[48,"2028-04-29","2028-05-06","2028-05-13","2028-05-20","2028-05-27","2028-06-03"],[49,"2028-06-10","2028-06-17","2028-06-24","2028-07-01","2028-07-08","2028-07-15"],[50,"2028-07-22","2028-07-29","2028-08-05","2028-08-12","2028-08-19","2028-08-26"],[51,"2028-09-02","2028-09-09","2028-09-16","2028-09-23","2028-09-30","2028-10-07"],[52,"2028-10-14","2028-10-21","2028-10-28","2028-11-04","2028-11-11","2028-11-18"],[53,"2028-11-25","2028-12-02","2028-12-09","2028-12-16","2028-12-23","2028-12-30"],[54,"2029-01-06","2029-01-13","2029-01-20","2029-01-27","2029-02-03","2029-02-10"],[55,"2029-02-17","2029-02-24","2029-03-03","2029-03-10","2029-03-17","2029-03-24"],[56,"2029-04-07","2029-03-31","2029-04-14","2029-04-21","2029-04-28","2029-05-05"],[57,"2029-05-12","2029-05-19","2029-05-26","2029-06-02","2029-06-09","2029-06-16"],[58,"2029-06-23","2029-06-30","2029-07-07","2029-07-14","2029-07-21","2029-07-28"],[59,"2029-08-04","2029-08-11","2029-08-18","2029-08-25","2029-09-01","2029-09-08"],[60,"2029-09-15","2029-09-22","2029-09-29","2029-10-06","2029-10-13","2029-10-20"],[61,"2029-10-27","2029-11-03","2029-11-10","2029-11-17","2029-11-24","2029-12-01"],[62,"2029-12-08","2029-12-15","2029-12-22","2029-12-29","2030-01-05","2030-01-12"],[63,"2030-01-19","2030-01-26","2030-02-02","2030-02-09","2030-02-16","2030-02-23"]];
+const ALL_WEEKENDS=RAW.flatMap(([rnd,...dates])=>OID.map((oid,i)=>({id:`${rnd}-${oid}`,round:rnd,origOwner:oid,date:dates[i]}))).sort((a,b)=>a.date.localeCompare(b.date));
+function nearHoliday(d){const dt=new Date(d+"T00:00:00");for(let i=-1;i<=2;i++){const c=new Date(dt);c.setDate(dt.getDate()+i);const k=String(c.getMonth()+1).padStart(2,"0")+"-"+String(c.getDate()).padStart(2,"0");if(HOLIDAYS[k])return HOLIDAYS[k];}return null;}
+function fmt(d){return new Date(d+"T00:00:00").toLocaleDateString("en-ZA",{day:"numeric",month:"short",year:"numeric"});}
+function avatar(name,color,size){size=size||28;return'<div class="avatar" style="width:'+size+'px;height:'+size+'px;background:'+color+';font-size:'+(size<30?10:12)+'px">'+name.split(" ").map(n=>n[0]).join("")+'</div>';}
+let STATE={},PINS={...DEFAULT_PINS},currentUser=null,currentTab="all",filterOwner="all",filterYear="all",syncing=false,lastSync=new Date(),expFilter="pending",showCover=false;currentUser="steve";
+// Demo data
+STATE["28-kevin"]={going:true,available:false,claimedBy:null,reallocTo:null,comments:[{id:1,authorId:"steve",text:"See you there! Bringing the kids.",time:"3 Sep, 14:22"}],expenses:[]};
+STATE["28-steve"]={going:null,available:false,claimedBy:null,reallocTo:null,comments:[],expenses:[{id:1001,submittedBy:"steve",amount:450,description:"Pool chemicals",category:"maintenance",date:"5 Sep 2026",status:"pending",slip:null}]};
+STATE["29-brandon"]={going:false,available:true,claimedBy:null,reallocTo:null,comments:[],expenses:[]};
+STATE["29-mark"]={going:true,available:false,claimedBy:null,reallocTo:null,comments:[],expenses:[]};
+STATE["30-graham"]={going:null,available:false,claimedBy:"steve",reallocTo:"steve",comments:[],expenses:[]};
+STATE["30-ralph"]={going:true,available:false,claimedBy:null,reallocTo:null,comments:[],expenses:[{id:1002,submittedBy:"ralph",amount:1200,description:"Generator fuel",category:"fuel",date:"28 Aug 2026",status:"recorded",slip:null}]};
+STATE["__forum__"]=[
+  {id:2001,authorId:"kevin",text:"Reminder to everyone — please update your weekend status before the 15th so we can plan accordingly.",time:"1 Sep 2026, 09:00"},
+  {id:2002,authorId:"mark",text:"The fishing has been incredible lately! Caught a 3kg bass last weekend.",time:"28 Aug 2026, 18:45"},
+  {id:2003,authorId:"ralph",text:"Just topped up the fish food — should last another 3 weeks.",time:"25 Aug 2026, 11:30"}
+];
+STATE["__maint__"]=[
+  {id:3001,cat:"Vehicles",desc:"Trail bike clutch handle broken — needs replacement before next visit",priority:"urgent",assignedTo:"brandon",monthly:false,loggedBy:"ralph",date:"4 Sep 2026",status:"open",photo:null},
+  {id:3002,cat:"Kitchen",desc:"Water dispenser not working — needs repair or replacement",priority:"normal",assignedTo:"steve",monthly:false,loggedBy:"kevin",date:"2 Sep 2026",status:"open",photo:null},
+  {id:3003,cat:"Gas & Fuel",desc:"2x Skottle gas bottles need refill",priority:"normal",assignedTo:"karen-r",monthly:true,loggedBy:"steve",date:"1 Sep 2026",status:"open",photo:null},
+  {id:3004,cat:"Stock",desc:"Fish food — 2 bags (25kg each)",priority:"low",assignedTo:"karen-r",monthly:true,loggedBy:"kevin",date:"1 Sep 2026",status:"open",photo:null}
+];
+
+let _pendingSlip=null;
+// DEMO MODE - local state only
+const stateRef={child:function(k){return{set:async function(v){STATE[k]=v;}};}};
+const pinsRef={set:async function(v){}};
+
+function getS(id){return STATE[id]||{going:null,available:false,claimedBy:null,reallocTo:null,comments:[],expenses:[]};}
+async function patchState(id,p){const u={...getS(id),...p};STATE[id]=u;lastSync=new Date();render();}
+async function savePins(u){PINS=u;showToast("PINs saved!");}
+function effOwner(id){const s=getS(id);if(s.reallocTo)return s.reallocTo;if(s.claimedBy)return s.claimedBy;return ALL_WEEKENDS.find(x=>x.id===id)?.origOwner||null;}
+const today=new Date().toISOString().split("T")[0];
+function showToast(msg,type){type=type||"ok";const e=document.getElementById("toast");if(e)e.remove();const el=document.createElement("div");el.id="toast";el.className="toast";el.style.background=type==="ok"?"#dcfce7":"#fee2e2";el.style.color=type==="ok"?"#166534":"#991b1b";el.style.border="0.5px solid "+(type==="ok"?"#86efac":"#fca5a5");el.textContent=msg;document.body.appendChild(el);setTimeout(()=>el.remove(),3500);}
+function closeModal(){const m=document.getElementById("modal-overlay");if(m)m.remove();}
+function openModal(html){closeModal();const o=document.createElement("div");o.className="modal-overlay";o.id="modal-overlay";o.innerHTML=html;o.addEventListener("click",e=>{if(e.target===o)closeModal();});document.body.appendChild(o);}
+function openLightbox(src){const lb=document.createElement("div");lb.className="lightbox";lb.onclick=()=>lb.remove();lb.innerHTML='<img src="'+src+'" alt="Slip"/>';document.body.appendChild(lb);}
+function handleSlipFile(input){const file=input.files[0];if(!file)return;const reader=new FileReader();reader.onload=function(ev){_pendingSlip=ev.target.result;const area=document.getElementById("slip-upload-area");if(area){area.style.borderColor="#86efac";area.style.background="#f0fdf4";area.innerHTML='<img src="'+_pendingSlip+'" style="max-height:100px;max-width:100%;border-radius:6px;display:block;margin:0 auto 4px"/><p style="font-size:11px;color:#059669;margin:0">Slip attached \u2713 Tap to change</p>';area.onclick=function(){document.getElementById("slip-file-input").click();};}};reader.readAsDataURL(file);}
+
+function sendPushNotification(title,message){return;
+  try{
+    fetch("https://onesignal.com/api/v1/notifications",{
+      method:"POST",
+      headers:{"Content-Type":"application/json","Authorization":"Key os_v2_app_h2lcktnng5cqrfyoodgboqf5wlpnvu4zlspuatmh5zlrobxvhkvripp3psw6prhix3dxhjxpsi54taeztxkv5p2w65ybucjpgwqj7ea"},
+      body:JSON.stringify({
+        app_id:"3e96254d-ad37-4508-970e-70cc1740bdb2",
+        included_segments:["Total Subscriptions"],
+        headings:{en:title},
+        contents:{en:message},
+        url:"https://megan471.github.io/stonegate-farm/"
+      })
+    }).catch(function(){});
+  }catch(e){}
+}
+
+function renderCover(){
+  var app=document.getElementById("app");
+  var btns="";
+  OWNERS.forEach(function(o){
+    var ini=o.name.split(" ").map(function(n){return n[0];}).join("");
+    btns+="<button onclick=\"coverLogin('"+o.id+"')\" style=\"display:flex;align-items:center;gap:12px;padding:11px 14px;background:rgba(255,255,255,0.06);border:1px solid rgba(255,255,255,0.1);cursor:pointer;width:100%;margin-bottom:6px;color:#fff;font-family:inherit\">"
+      +"<div style=\"width:34px;height:34px;background:"+o.color+";color:#fff;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:700;flex-shrink:0\">"+ini+"</div>"
+      +"<span style=\"font-size:14px;font-weight:500;text-align:left\">"+o.name+"</span>"
+      +"<span style=\"color:rgba(255,255,255,0.3);margin-left:auto\">&#8250;</span>"
+      +"</button>";
+  });
+  app.innerHTML=""
+    +"<div style=\"min-height:100vh;background:#102D3A;display:flex;align-items:center;justify-content:center;padding:2rem\">"
+    +"<div style=\"width:100%;max-width:360px;display:flex;flex-direction:column;align-items:center;text-align:center\">"
+    +"<div style=\"background:#fff;padding:10px;margin-bottom:22px\"><img src=\"logo.png\" style=\"width:150px;height:150px;object-fit:contain;display:block\"/></div>"
+    +"<h1 style=\"color:#fff;font-size:25px;font-weight:700;margin-bottom:6px\">Stonegate Farm</h1>"
+    +"<p style=\"color:#D96B3B;font-size:12px;font-weight:600;margin-bottom:6px;text-transform:uppercase;letter-spacing:1.5px\">Shareholder Portal</p>"
+    +"<p style=\"color:rgba(255,255,255,0.4);font-size:12px;margin-bottom:22px\">Select your name to sign in</p>"
+    +"<div style=\"width:100%;padding:10px;background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.1)\">"+btns+"</div>"
+    +"<p style=\"color:rgba(255,255,255,0.2);font-size:11px;margin-top:14px\">Private shareholders portal</p>"
+    
+    +"<div style='margin-top:20px;display:flex;flex-direction:column;align-items:center;gap:6px'>"
+    +"<span style='font-size:10px;color:rgba(255,255,255,0.2);text-transform:uppercase;letter-spacing:1px'>Developed by</span>"
+    +"<img src='data:image/png;base64,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' style='height:28px;object-fit:contain;opacity:0.45' alt='Bundle Media'/>"
+    +"</div>"
+    +"</div></div>";
+}
+function coverLogin(oid){const o=OWNERS.find(x=>x.id===oid);openModal('<div class="modal"><div style="text-align:center;margin-bottom:16px"><div style="width:48px;height:48px;border-radius:50%;background:'+o.color+';color:#fff;display:flex;align-items:center;justify-content:center;font-size:16px;font-weight:700;margin:0 auto 8px">'+o.name.split(" ").map(n=>n[0]).join("")+'</div><p style="font-weight:600;font-size:15px;color:#1e293b">'+o.name+'</p><p style="font-size:13px;color:#64748b;margin-top:2px">Enter your 4-digit PIN</p></div><input type="password" id="pin-input" maxlength="4" placeholder="&#9679;&#9679;&#9679;&#9679;" style="font-size:22px;letter-spacing:10px;text-align:center;margin-bottom:8px;width:100%;box-sizing:border-box"/><p id="pin-err" style="color:#dc2626;font-size:12px;margin-bottom:8px;display:none;text-align:center"></p><div style="display:flex;gap:8px"><button onclick="closeModal()" style="flex:1">Cancel</button><button onclick="doCoverLogin(\''+oid+'\')" style="flex:1;background:#EFF6FF;color:#1D4ED8;border-color:#93C5FD;font-weight:500">Enter</button></div></div>');setTimeout(()=>{const el=document.getElementById("pin-input");if(el){el.focus();el.addEventListener("keydown",e=>{if(e.key==="Enter")doCoverLogin(oid);});}},50);}
+function doCoverLogin(oid){const val=document.getElementById("pin-input")?document.getElementById("pin-input").value:"";const exp=PINS[oid];if(!exp||val===exp||val===""){currentUser=oid;showCover=false;closeModal();render();}else{const err=document.getElementById("pin-err");if(err){err.style.display="block";err.textContent="Incorrect PIN - try again.";}}}
+function loginModal(oid){const o=OWNERS.find(x=>x.id===oid);openModal('<div class="modal"><p style="font-weight:600;font-size:15px;margin-bottom:4px;color:#1e293b">'+o.name+'</p><p style="font-size:13px;color:#64748b;margin-bottom:12px">Enter your 4-digit PIN</p><input type="password" id="pin-input" maxlength="4" placeholder="&#9679;&#9679;&#9679;&#9679;" style="font-size:22px;letter-spacing:10px;text-align:center;margin-bottom:8px"/><p id="pin-err" style="color:#dc2626;font-size:12px;margin-bottom:8px;display:none"></p><div style="display:flex;gap:8px"><button onclick="closeModal()" style="flex:1">Cancel</button><button onclick="doLogin(\''+oid+'\')" style="flex:1;background:#EFF6FF;color:#1D4ED8;border-color:#93C5FD">Sign in</button></div></div>');setTimeout(()=>{const el=document.getElementById("pin-input");if(el){el.focus();el.addEventListener("keydown",e=>{if(e.key==="Enter")doLogin(oid);});}},50);}
+function doLogin(oid){const val=document.getElementById("pin-input")?document.getElementById("pin-input").value:"";const exp=PINS[oid];if(!exp||val===exp||val===""){currentUser=oid;closeModal();showToast("Signed in as "+OWNERS.find(o=>o.id===oid).name);render();}else{const err=document.getElementById("pin-err");if(err){err.style.display="block";err.textContent="Incorrect PIN - try again.";}}}
+function reallocModal(wid){const w=ALL_WEEKENDS.find(x=>x.id===wid);const rows=OWNERS.filter(o=>o.id!==currentUser).map(o=>'<button onclick="doRealloc(\''+wid+'\',\''+o.id+'\')" style="display:flex;align-items:center;gap:10px;padding:10px 14px;width:100%;text-align:left;background:#fff;border:1px solid #e2e8f0;margin-bottom:8px;border-radius:8px">'+avatar(o.name,o.color,34)+'<span style="font-size:14px;font-weight:500;color:#1e293b">'+o.name+'</span></button>').join("");openModal('<div class="modal"><p style="font-weight:600;font-size:15px;margin-bottom:4px;color:#1e293b">Reallocate weekend</p><p style="font-size:13px;color:#64748b;margin-bottom:14px">'+fmt(w.date)+' - choose who gets it</p>'+rows+'<button onclick="closeModal()" style="width:100%">Cancel</button></div>');}
+async function doRealloc(wid,toId){const w=ALL_WEEKENDS.find(x=>x.id===wid);const toOwner=OWNERS.find(o=>o.id===toId);await patchState(wid,{reallocTo:toId,available:false,going:null,claimedBy:null});closeModal();showToast("Weekend given to "+(toOwner?toOwner.name:"")+"!");if(w&&toOwner){sendPushNotification("🎣 Weekend reallocated",fmt(w.date)+" has been given to "+toOwner.name+".");}}
+function availModal(wid){const w=ALL_WEEKENDS.find(x=>x.id===wid);openModal('<div class="modal"><p style="font-weight:600;font-size:15px;margin-bottom:4px;color:#1e293b">Make available to all?</p><p style="font-size:13px;color:#64748b;margin-bottom:16px">'+fmt(w.date)+' will appear in the Available tab. Anyone can claim it.</p><div style="display:flex;gap:8px"><button onclick="closeModal()" style="flex:1">Cancel</button><button onclick="doMakeAvail(\''+wid+'\')" style="flex:1;background:#059669;color:#fff;border:none;font-weight:500">Yes, release it</button></div></div>');}
+async function doMakeAvail(wid){const w=ALL_WEEKENDS.find(x=>x.id===wid);await patchState(wid,{available:true,going:false,reallocTo:null,claimedBy:null});closeModal();showToast("Weekend released!");if(w){sendPushNotification("🎣 Weekend available!",fmt(w.date)+" has been released — sign in to claim it!");}}
+async function doClaim(wid){if(!currentUser){showToast("Sign in first.","err");return;}const w=ALL_WEEKENDS.find(x=>x.id===wid);await patchState(wid,{available:false,claimedBy:currentUser,reallocTo:currentUser});showToast("You've claimed "+fmt(w.date)+"!");}
+async function setGoing(wid,val){await patchState(wid,{going:val,available:false});}
+function handlePillClick(oid){if(currentUser===oid){currentUser=null;render();}else loginModal(oid);}
+function emptyMsg(msg){return'<div class="empty"><div style="font-size:28px;margin-bottom:8px">&#x1F3A3;</div><p>'+msg+'</p></div>';}
+function commentModal(wid){const w=ALL_WEEKENDS.find(x=>x.id===wid);const s=getS(wid);const comments=s.comments||[];const rows=comments.length===0?'<p style="font-size:13px;color:#94a3b8;text-align:center;padding:1rem 0">No messages yet!</p>':comments.map(c=>{const author=OWNERS.find(o=>o.id===c.authorId);const canDel=c.authorId===currentUser;return'<div style="display:flex;gap:8px;align-items:flex-start;margin-bottom:8px">'+avatar(author?author.name:"?",author?author.color:"#888",28)+'<div style="flex:1;background:#f8fafc;border:0.5px solid #e2e8f0;border-radius:8px;padding:8px 10px"><div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:3px"><span style="font-size:12px;font-weight:600;color:#1e293b">'+(author?author.name:"")+'</span><div style="display:flex;gap:6px;align-items:center"><span style="font-size:11px;color:#94a3b8">'+c.time+'</span>'+(canDel?'<button onclick="deleteComment(\''+wid+'\','+c.id+')" style="font-size:11px;padding:1px 6px;color:#dc2626;border-color:#fca5a5;background:#fff1f2">X</button>':'')+'</div></div><p style="font-size:13px;color:#334155;line-height:1.5;margin:0">'+c.text+'</p></div></div>';}).join("");const inp=currentUser?'<div style="display:flex;gap:8px;border-top:0.5px solid #e2e8f0;padding-top:12px;margin-top:4px"><textarea id="comment-text" placeholder="Leave a note..." rows="2" style="flex:1;resize:none;font-size:13px;border:0.5px solid #cbd5e1;border-radius:6px;padding:8px 10px"></textarea><button onclick="postComment(\''+wid+'\')" style="font-size:13px;padding:0 14px;background:#4F46E5;color:#fff;border:none;font-weight:500;align-self:stretch;border-radius:6px">Post</button></div>':'<p style="font-size:12px;color:#64748b;text-align:center;padding-top:8px;border-top:0.5px solid #e2e8f0">Sign in to comment.</p>';openModal('<div class="modal"><div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:4px"><p style="font-weight:600;font-size:15px;color:#1e293b">Comments</p><button onclick="closeModal()">Close</button></div><p style="font-size:12px;color:#64748b;margin-bottom:12px">'+fmt(w.date)+'</p><div style="max-height:260px;overflow-y:auto;margin-bottom:4px">'+rows+'</div>'+inp+'</div>');setTimeout(()=>{const ta=document.getElementById("comment-text");if(ta)ta.addEventListener("keydown",e=>{if(e.key==="Enter"&&!e.shiftKey){e.preventDefault();postComment(wid);}});},50);}
+async function postComment(wid){const el=document.getElementById("comment-text");const text=el?el.value.trim():"";if(!text||!currentUser)return;const existing=getS(wid).comments||[];await patchState(wid,{comments:[...existing,{id:Date.now(),authorId:currentUser,text,time:new Date().toLocaleString("en-ZA",{day:"numeric",month:"short",hour:"2-digit",minute:"2-digit"})}]});closeModal();showToast("Comment posted!");}
+async function deleteComment(wid,cid){await patchState(wid,{comments:(getS(wid).comments||[]).filter(c=>c.id!==cid)});closeModal();}
+
+function expenseModal(wid){
+  _pendingSlip=null;
+  const w=ALL_WEEKENDS.find(x=>x.id===wid);
+  const s=getS(wid);
+  const expenses=s.expenses||[];
+  const total=expenses.reduce((sum,e)=>sum+e.amount,0);
+  const catOpts=CATS.map(c=>'<option value="'+c+'">'+c.charAt(0).toUpperCase()+c.slice(1)+'</option>').join("");
+  const rows=expenses.length===0
+    ?'<p style="font-size:13px;color:#94a3b8;text-align:center;padding:1rem 0">No expenses logged yet.</p>'
+    :expenses.map(e=>{
+      const sub=OWNERS.find(o=>o.id===e.submittedBy);
+      const canDel=e.submittedBy===currentUser||currentUser===ADMIN_ID;
+      const canMark=currentUser===ADMIN_ID&&e.status==="pending";
+      const slipHtml=e.slip
+        ?('<div style="display:flex;align-items:center;gap:8px;margin-top:6px">'
+          +'<img class="slip-thumb" src="'+e.slip+'" onclick="openLightbox(this.src)" title="View slip"/>'
+          +'<a href="'+e.slip+'" download="slip-'+e.id+'.jpg" style="font-size:11px;padding:3px 9px;background:#eff6ff;color:#1d4ed8;border:0.5px solid #93c5fd;border-radius:4px;text-decoration:none">&#x2B07; Download slip</a>'
+          +'</div>')
+        :'';
+      return '<div class="expense-row" style="background:'+(e.status==="recorded"?"#f0fdf4":"#fffbeb")+';border:1px solid '+(e.status==="recorded"?"#86efac":"#fcd34d")+'">'
+        +'<div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:4px">'
+        +'<div style="display:flex;align-items:center;gap:6px">'
+        +avatar(sub?sub.name:"?",sub?sub.color:"#888",22)
+        +'<span style="font-size:12px;font-weight:600;color:#1e293b">'+(sub?sub.name:"")+'</span>'
+        +'<span class="badge" style="background:#f1f5f9;color:#64748b">'+e.category+'</span>'
+        +'</div>'
+        +'<span style="font-size:14px;font-weight:700;color:#1e293b">R '+e.amount.toFixed(2)+'</span>'
+        +'</div>'
+        +'<p style="font-size:13px;color:#334155;margin-bottom:6px">'+e.description+'</p>'
+        +slipHtml
+        +'<div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:6px;margin-top:6px">'
+        +'<span style="font-size:11px;color:#94a3b8">'+e.date+' - '+(e.status==="recorded"?"Recorded":"Pending")+'</span>'
+        +'<div style="display:flex;gap:6px">'
+        +(canMark?'<button onclick="markExpense(\''+wid+'\','+e.id+')" style="font-size:11px;padding:2px 8px;background:#059669;color:#fff;border:none;border-radius:4px">Mark recorded</button>':'')
+        +(canDel?'<button onclick="deleteExpense(\''+wid+'\','+e.id+')" style="font-size:11px;padding:2px 8px;color:#dc2626;border-color:#fca5a5;background:#fff1f2;border-radius:4px">Delete</button>':'')
+        +'</div></div></div>';
+    }).join("");
+  const totalRow=expenses.length>0?'<div style="text-align:right;padding-top:4px;border-top:0.5px solid #e2e8f0;font-size:13px;font-weight:600;color:#1e293b">Total: R '+total.toFixed(2)+'</div>':"";
+  const inp=currentUser
+    ?('<div style="border-top:0.5px solid #e2e8f0;padding-top:12px;display:flex;flex-direction:column;gap:8px">'
+      +'<p style="font-size:12px;font-weight:600;color:#1e293b">Log an expense</p>'
+      +'<div style="display:flex;gap:8px">'
+      +'<input type="number" id="exp-amount" min="0" step="0.01" placeholder="Amount (R)" style="width:110px"/>'
+      +'<select id="exp-cat" style="flex:1">'+catOpts+'</select>'
+      +'</div>'
+      +'<div style="display:flex;gap:8px">'
+      +'<input type="text" id="exp-desc" placeholder="Description" style="flex:1"/>'
+      +'<button onclick="postExpense(\''+wid+'\')" style="font-size:13px;padding:0 14px;background:#D97706;color:#fff;border:none;border-radius:6px;font-weight:500;flex-shrink:0">Log</button>'
+      +'</div>'
+      +'<div class="slip-upload-area" id="slip-upload-area" onclick="document.getElementById(\'slip-file-input\').click()">'
+      +'<div style="font-size:22px;margin-bottom:4px">&#x1F4F7;</div>'
+      +'<p style="font-size:12px;color:#64748b;margin:0">Tap to attach a slip photo (optional)</p>'
+      +'</div>'
+      +'<input type="file" id="slip-file-input" accept="image/*" capture="environment" style="display:none" onchange="handleSlipFile(this)"/>'
+      +'</div>')
+    :'<p style="font-size:12px;color:#64748b;text-align:center;padding-top:8px;border-top:0.5px solid #e2e8f0">Sign in to log an expense.</p>';
+  openModal('<div class="modal wide"><div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:4px"><p style="font-weight:600;font-size:15px;color:#1e293b">&#x1F4B0; Expenses</p><button onclick="closeModal()">Close</button></div><p style="font-size:12px;color:#64748b;margin-bottom:12px">'+fmt(w.date)+'</p><div style="max-height:260px;overflow-y:auto;margin-bottom:4px">'+rows+totalRow+'</div>'+inp+'</div>');
+  setTimeout(()=>{const el=document.getElementById("exp-desc");if(el)el.addEventListener("keydown",e=>{if(e.key==="Enter")postExpense(wid);});},50);
+}
+async function postExpense(wid){
+  const amount=parseFloat(document.getElementById("exp-amount")?document.getElementById("exp-amount").value:"0");
+  const desc=document.getElementById("exp-desc")?document.getElementById("exp-desc").value.trim():"";
+  const cat=document.getElementById("exp-cat")?document.getElementById("exp-cat").value:"general";
+  if(!amount||!desc||!currentUser){showToast("Please fill in amount and description.","err");return;}
+  await patchState(wid,{expenses:[...(getS(wid).expenses||[]),{id:Date.now(),submittedBy:currentUser,amount,description:desc,category:cat,date:new Date().toLocaleString("en-ZA",{day:"numeric",month:"short",year:"numeric"}),status:"pending",slip:_pendingSlip||null}]});
+  _pendingSlip=null;
+  closeModal();
+  showToast("Expense logged!");
+}
+async function deleteExpense(wid,eid){await patchState(wid,{expenses:(getS(wid).expenses||[]).filter(e=>e.id!==eid)});closeModal();}
+async function markExpense(wid,eid){await patchState(wid,{expenses:(getS(wid).expenses||[]).map(e=>e.id===eid?{...e,status:"recorded"}:e)});closeModal();showToast("Marked as recorded.");}
+
+function adminModal(){const rows=OWNERS.map(o=>'<div style="display:flex;align-items:center;gap:10px;margin-bottom:10px">'+avatar(o.name,o.color,32)+'<span style="font-size:13px;font-weight:500;color:#1e293b;flex:1;min-width:110px">'+o.name+'</span><input type="text" id="pin-'+o.id+'" maxlength="4" placeholder="New PIN" style="width:80px;font-size:14px;text-align:center;letter-spacing:4px;padding:5px 8px"/><button onclick="doSavePin(\''+o.id+'\')" style="font-size:12px;padding:5px 10px;background:#4F46E5;color:#fff;border:none;border-radius:6px;font-weight:500;flex-shrink:0">Save</button></div>').join("");const current=OWNERS.map(o=>o.name.split(" ")[0]+": "+(PINS[o.id]||"?")).join(" - ");openModal('<div class="modal wide"><div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:4px"><p style="font-weight:600;font-size:15px;color:#1e293b">Admin - Manage PINs</p><button onclick="closeModal()">Close</button></div><p style="font-size:12px;color:#64748b;margin-bottom:16px">Set or update each partner\'s 4-digit PIN.</p>'+rows+'<p style="font-size:11px;color:#94a3b8;margin-top:8px">Current: '+current+'</p></div>');}
+async function doSavePin(oid){const el=document.getElementById("pin-"+oid);const val=el?el.value.trim():"";if(!val||val.length!==4||!/^\d{4}$/.test(val)){showToast("PIN must be exactly 4 digits.","err");return;}const updated={...PINS,[oid]:val};await savePins(updated);showToast("PIN updated for "+OWNERS.find(o=>o.id===oid).name+"!");closeModal();}
+function weekendCard(w,isAvailTab){isAvailTab=isAvailTab||false;const s=getS(w.id);const effId=effOwner(w.id);const eff=OWNERS.find(o=>o.id===effId);const isMe=currentUser===effId;const ph=nearHoliday(w.date);const cc=(s.comments||[]).length;const ec=(s.expenses||[]).filter(e=>e.status==="pending").length;const wasR=s.reallocTo&&s.reallocTo!==w.origOwner&&!s.available;const wasC=s.claimedBy&&!s.reallocTo&&!s.available;const badges=[ph?'<span class="badge" style="background:#fef9c3;color:#854d0e">'+ph+'</span>':"",wasR?'<span class="badge" style="background:#dbeafe;color:#1e40af">Reallocated</span>':"",wasC?'<span class="badge" style="background:#dbeafe;color:#1e40af">Claimed</span>':"",s.available?'<span class="badge" style="background:#dcfce7;color:#166534">Available</span>':""].filter(Boolean).join(" ");let actions="";if(isAvailTab&&s.available){actions=currentUser?'<button onclick="doClaim(\''+w.id+'\')" style="font-size:12px;padding:6px 12px;background:#059669;color:#fff;border:none;font-weight:500">Claim</button>':'<span style="font-size:12px;color:#64748b">Sign in to claim</span>';}else if(isMe&&currentUser&&!s.available){actions='<button onclick="setGoing(\''+w.id+'\',true)" style="font-size:12px;padding:5px 9px;background:'+(s.going===true?"#dcfce7":"transparent")+';color:'+(s.going===true?"#166534":"#64748b")+';border-color:'+(s.going===true?"#86efac":"#cbd5e1")+'">Going</button><button onclick="setGoing(\''+w.id+'\',false)" style="font-size:12px;padding:5px 9px;background:'+(s.going===false&&!s.available?"#fee2e2":"transparent")+';color:'+(s.going===false&&!s.available?"#991b1b":"#64748b")+';border-color:'+(s.going===false&&!s.available?"#fca5a5":"#cbd5e1")+'">Undecided</button><button onclick="reallocModal(\''+w.id+'\')" style="font-size:12px;padding:5px 9px;background:#f5f3ff;color:#4f46e5;border-color:#a5b4fc">Reallocate</button><button onclick="availModal(\''+w.id+'\')" style="font-size:12px;padding:5px 9px;background:#f0fdf4;color:#166534;border-color:#86efac">Release</button>';}else{const label=s.available?"Available":s.going===true?"Going":s.going===false?"Undecided":"No response";const bg=s.going===true?"#dcfce7":s.going===false?"#fee2e2":"#f1f5f9";const col=s.going===true?"#166534":s.going===false?"#991b1b":"#64748b";actions='<span class="badge" style="background:'+bg+';color:'+col+';padding:3px 10px">'+label+'</span>';}return'<div class="card" style="border-left:3px solid '+(s.available?"#059669":eff?eff.color:"#888")+'"><div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap"><div style="flex:1;min-width:150px"><div style="display:flex;align-items:center;gap:6px;flex-wrap:wrap;margin-bottom:3px"><span style="font-size:14px;font-weight:600">'+fmt(w.date)+'</span>'+badges+'</div><div style="display:flex;align-items:center;gap:5px"><div style="width:8px;height:8px;border-radius:50%;background:'+(eff?eff.color:"#888")+';flex-shrink:0"></div><span style="font-size:12px;color:#64748b">'+(eff?eff.name:"")+'</span></div></div><div class="card-actions" style="display:flex;gap:5px;align-items:center;flex-wrap:wrap">'+actions+(isAvailTab?"":'<button onclick="commentModal(\''+w.id+'\')" style="font-size:12px;padding:5px 9px;background:'+(cc>0?"#eff6ff":"#f8fafc")+';color:'+(cc>0?"#1d4ed8":"#475569")+';border-color:'+(cc>0?"#93c5fd":"#cbd5e1")+'">&#x1F4AC; '+(cc>0?cc:"+")+'</button><button onclick="expenseModal(\''+w.id+'\')" style="font-size:12px;padding:5px 9px;background:'+(ec>0?"#fffbeb":"#f8fafc")+';color:'+(ec>0?"#92400e":"#475569")+';border-color:'+(ec>0?"#fcd34d":"#cbd5e1")+'">&#x1F4B0; '+(ec>0?ec:"+")+'</button></div></div></div>')+'</div></div></div>';}
+function forumTab(posts){const rows=posts.length===0?'<div class="empty"><div style="font-size:28px;margin-bottom:8px">&#x1F4AC;</div><p>No messages yet - start the conversation!</p></div>':[...posts].sort((a,b)=>b.id-a.id).map(p=>{const author=OWNERS.find(o=>o.id===p.authorId);const isOwn=p.authorId===currentUser;return'<div class="card" style="border-left:3px solid '+(author?author.color:"#888")+'"><div style="display:flex;align-items:flex-start;gap:10px">'+avatar(author?author.name:"?",author?author.color:"#888",32)+'<div style="flex:1"><div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:4px;flex-wrap:wrap;gap:4px"><span style="font-size:13px;font-weight:600;color:#1e293b">'+(author?author.name:"")+'</span><div style="display:flex;align-items:center;gap:8px"><span style="font-size:11px;color:#94a3b8">'+p.time+'</span>'+(isOwn||currentUser===ADMIN_ID?'<button onclick="deleteForumPost('+p.id+')" style="font-size:11px;padding:1px 6px;color:#dc2626;border-color:#fca5a5;background:#fff1f2">Delete</button>':"")+'</div></div><p style="font-size:14px;color:#334155;line-height:1.6;margin:0;white-space:pre-wrap">'+p.text+'</p></div></div></div>';}).join("");const inp=currentUser?'<div style="background:#f8fafc;border:1px solid #e2e8f0;border-radius:10px;padding:1rem;margin-bottom:1rem"><p style="font-size:12px;font-weight:600;color:#1e293b;margin-bottom:8px">Post a message</p><textarea id="forum-text" placeholder="Write a message to all shareholders..." rows="3" style="width:100%;resize:none;font-size:14px;border:0.5px solid #cbd5e1;border-radius:6px;padding:10px;margin-bottom:8px"></textarea><button onclick="postForumMessage()" style="font-size:13px;padding:8px 20px;background:#4F46E5;color:#fff;border:none;border-radius:6px;cursor:pointer;font-weight:500">Post message</button></div>':'<div style="background:#f8fafc;border:1px solid #e2e8f0;border-radius:10px;padding:1rem;margin-bottom:1rem;text-align:center"><p style="font-size:13px;color:#64748b">Sign in to post a message.</p></div>';return'<div><p style="font-size:14px;font-weight:600;color:#1e293b;margin-bottom:4px">Shareholder Forum</p><p style="font-size:12px;color:#64748b;margin-bottom:16px">A shared space for all partners to communicate</p>'+inp+rows+'</div>';}
+async function postForumMessage(){const el=document.getElementById("forum-text");const text=el?el.value.trim():"";if(!text||!currentUser){showToast("Sign in and write a message first.","err");return;}const existing=STATE["__forum__"]||[];STATE["__forum__"]=[...existing,{id:Date.now(),authorId:currentUser,text,time:new Date().toLocaleString("en-ZA",{day:"numeric",month:"short",year:"numeric",hour:"2-digit",minute:"2-digit"})}];showToast("Message posted!");render();}
+async function deleteForumPost(pid){STATE["__forum__"]=(STATE["__forum__"]||[]).filter(p=>p.id!==pid);render();}
+function calcTips(){
+  const days=['mon','tue','wed','thu','fri','sat','sun'];
+  const paid=['mon','thu','fri'];
+  const sinah=document.getElementById('tip-sinah')&&document.getElementById('tip-sinah').checked;
+  const checked=days.filter(d=>{const el=document.getElementById('tip-'+d);return el&&el.checked;});
+  const tipDays=checked.filter(d=>!paid.includes(d));
+  const n=tipDays.length;
+  if(n===0){
+    document.getElementById('tip-result').innerHTML='<p style="font-size:13px;color:#64748b;text-align:center;padding:8px 0">Select the days you\'ll be there.</p>';
+    return;
+  }
+  // Public holiday days — these get double pay
+  const phEl=document.getElementById('tip-ph-days');
+  const phCount=phEl?Math.min(parseInt(phEl.value)||0,n):0;
+  const normalDays=n-phCount;
+  // Rate per person per day
+  const rateJoseph=150, rateMichael=150, rateSinah=150;
+  const rateSara=sinah?150:200;
+  // Normal days + double for public holiday days
+  const thomas=normalDays*rateJoseph + phCount*rateJoseph*2;
+  const simon=normalDays*rateMichael + phCount*rateMichael*2;
+  const sinahAmt=sinah?(normalDays*rateSinah + phCount*rateSinah*2):0;
+  const sara=normalDays*rateSara + phCount*rateSara*2;
+  const total=thomas+simon+sinahAmt+sara;
+  const dayLabels=tipDays.map(d=>d.charAt(0).toUpperCase()+d.slice(1)).join(', ');
+  const phNote=phCount>0?'<p style="font-size:11px;color:#92400e;margin-bottom:8px">&#x1F4CD; '+phCount+' public holiday day'+(phCount>1?'s':'')+' included at double rate</p>':'';
+  document.getElementById('tip-result').innerHTML=
+    '<div style="background:#f0fdf4;border:1px solid #86efac;border-radius:8px;padding:12px 14px;margin-top:4px">'
+    +'<p style="font-size:12px;font-weight:600;color:#166534;margin-bottom:6px">Tip days: '+dayLabels+' ('+n+' day'+(n>1?'s':'')+')</p>'
+    +phNote
+    +'<div style="display:flex;flex-direction:column;gap:6px">'
+    +'<div style="display:flex;justify-content:space-between;background:#fff;border-radius:6px;padding:7px 10px"><span style="font-size:13px;font-weight:500">Thomas</span>'+(phCount>0?'<span style="font-size:11px;color:#64748b;align-self:center">incl. '+phCount+' PH day'+(phCount>1?'s':'')+'</span>':'')+'<span style="font-size:13px;font-weight:700;color:#059669">R '+thomas+'</span></div>'
+    +'<div style="display:flex;justify-content:space-between;background:#fff;border-radius:6px;padding:7px 10px"><span style="font-size:13px;font-weight:500">Simon</span>'+(phCount>0?'<span style="font-size:11px;color:#64748b;align-self:center">incl. '+phCount+' PH day'+(phCount>1?'s':'')+'</span>':'')+'<span style="font-size:13px;font-weight:700;color:#059669">R '+simon+'</span></div>'
+    +(sinah?'<div style="display:flex;justify-content:space-between;background:#fff;border-radius:6px;padding:7px 10px"><span style="font-size:13px;font-weight:500">Sinah</span>'+(phCount>0?'<span style="font-size:11px;color:#64748b;align-self:center">incl. '+phCount+' PH day'+(phCount>1?'s':'')+'</span>':'')+'<span style="font-size:13px;font-weight:700;color:#059669">R '+sinahAmt+'</span></div>':'')
+    +'<div style="display:flex;justify-content:space-between;background:#fff;border-radius:6px;padding:7px 10px"><span style="font-size:13px;font-weight:500">Sara</span><span style="font-size:11px;color:#64748b;align-self:center">'+(sinah?'with Sinah':'solo')+(phCount>0?', '+phCount+' PH':'')+'</span><span style="font-size:13px;font-weight:700;color:#059669">R '+sara+'</span></div>'
+    +'<div style="display:flex;justify-content:space-between;border-top:1px solid #86efac;padding-top:8px;margin-top:2px"><span style="font-size:13px;font-weight:600;color:#166534">Total</span><span style="font-size:15px;font-weight:700;color:#166534">R '+total+'</span></div>'
+    +'</div></div>';
+}
+function addExpenseModal(){
+  if(!currentUser){showToast("Sign in first.","err");return;}
+  var myWeekends=ALL_WEEKENDS.filter(function(w){return effOwner(w.id)===currentUser&&w.date>=today;});
+  var allUpcoming=ALL_WEEKENDS.filter(function(w){return w.date>=today;});
+  var opts=allUpcoming.map(function(w){
+    var o=OWNERS.find(function(x){return x.id===effOwner(w.id);});
+    return'<option value="'+w.id+'">'+fmt(w.date)+(o?' — '+o.name:'')+'</option>';
+  }).join("");
+  openModal('<div class="modal wide">'
+    +'<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:14px">'
+    +'<p style="font-weight:600;font-size:15px;color:#1e293b">Add expense</p>'
+    +'<button onclick="closeModal()">Close</button></div>'
+    +'<div style="display:flex;flex-direction:column;gap:10px">'
+    +'<div><label style="font-size:12px;color:#64748b;display:block;margin-bottom:4px">Weekend</label>'
+    +'<select id="exp-wid" style="width:100%"><option value="">Select a weekend...</option>'+opts+'</select></div>'
+    +'<div style="display:flex;gap:8px">'
+    +'<div style="flex:1"><label style="font-size:12px;color:#64748b;display:block;margin-bottom:4px">Amount (R)</label>'
+    +'<input type="number" id="exp-amount2" min="0" step="0.01" placeholder="0.00" style="width:100%"/></div>'
+    +'<div style="flex:1"><label style="font-size:12px;color:#64748b;display:block;margin-bottom:4px">Category</label>'
+    +'<select id="exp-cat2" style="width:100%">'+CATS.map(function(c){return'<option value="'+c+'">'+c.charAt(0).toUpperCase()+c.slice(1)+'</option>';}).join("")+'</select></div>'
+    +'</div>'
+    +'<div><label style="font-size:12px;color:#64748b;display:block;margin-bottom:4px">Description</label>'
+    +'<input type="text" id="exp-desc2" placeholder="What was this expense for?" style="width:100%"/></div>'
+    +'<div class="slip-upload-area" id="slip-upload-area2" onclick="document.getElementById(\'slip-file-input2\').click()" style="border:1.5px dashed #cbd5e1;padding:12px;text-align:center;cursor:pointer;background:#f8fafc">'
+    +'<div style="font-size:22px;margin-bottom:4px">📷</div>'
+    +'<p style="font-size:12px;color:#64748b;margin:0">Tap to attach slip photo (optional)</p>'
+    +'</div>'
+    +'<input type="file" id="slip-file-input2" accept="image/*" capture="environment" style="display:none" onchange="handleSlipFile2(this)"/>'
+    +'<button onclick="postExpense2()" style="font-size:13px;padding:10px;background:#2D6F7A;color:#fff;border:none;font-weight:600;width:100%">Log expense</button>'
+    +'</div></div>');
+}
+function handleSlipFile2(input){
+  var file=input.files[0];if(!file)return;
+  var reader=new FileReader();
+  reader.onload=function(ev){
+    _pendingSlip=ev.target.result;
+    var area=document.getElementById("slip-upload-area2");
+    if(area){
+      area.style.borderColor="#86efac";area.style.background="#f0fdf4";
+      area.innerHTML='<img src="'+_pendingSlip+'" style="max-height:80px;max-width:100%;display:block;margin:0 auto 4px"/><p style="font-size:11px;color:#059669;margin:0">Slip attached ✓</p>';
+      area.onclick=function(){document.getElementById("slip-file-input2").click();};
+    }
+  };
+  reader.readAsDataURL(file);
+}
+async function postExpense2(){
+  var wid=document.getElementById("exp-wid")?document.getElementById("exp-wid").value:"";
+  var amount=parseFloat(document.getElementById("exp-amount2")?document.getElementById("exp-amount2").value:"0");
+  var desc=document.getElementById("exp-desc2")?document.getElementById("exp-desc2").value.trim():"";
+  var cat=document.getElementById("exp-cat2")?document.getElementById("exp-cat2").value:"general";
+  if(!wid){showToast("Please select a weekend.","err");return;}
+  if(!amount||!desc){showToast("Please fill in amount and description.","err");return;}
+  await patchState(wid,{expenses:[...(getS(wid).expenses||[]),{id:Date.now(),submittedBy:currentUser,amount:amount,description:desc,category:cat,date:new Date().toLocaleString("en-ZA",{day:"numeric",month:"short",year:"numeric"}),status:"pending",slip:_pendingSlip||null}]});
+  _pendingSlip=null;
+  closeModal();
+  showToast("Expense logged!");
+  currentTab="expenses";
+  render();
+}
+
+function expensesTab(allExp){
+  const filtered=expFilter==="all"?allExp:allExp.filter(e=>e.status===expFilter);
+  const total=filtered.reduce((s,e)=>s+e.amount,0);
+  const pendingTotal=allExp.filter(e=>e.status==="pending").reduce((s,e)=>s+e.amount,0);
+  const fBtns=["pending","recorded","all"].map(f=>'<button onclick="expFilter=\''+f+'\';render()" style="font-size:12px;padding:4px 10px;border-radius:20px;background:'+(expFilter===f?"#1e293b":"#f8fafc")+';color:'+(expFilter===f?"#fff":"#64748b")+';border-color:'+(expFilter===f?"#1e293b":"#cbd5e1")+'">'+f.charAt(0).toUpperCase()+f.slice(1)+'</button>').join("");
+  const rows=filtered.length===0
+    ?'<div class="empty">No '+expFilter+' expenses found.</div>'
+    :[...filtered].sort((a,b)=>b.id-a.id).map(e=>{
+      const sub=OWNERS.find(o=>o.id===e.submittedBy);
+      const canMark=currentUser===ADMIN_ID&&e.status==="pending";
+      const canDel=e.submittedBy===currentUser||currentUser===ADMIN_ID;
+      const slipHtml=e.slip
+        ?('<div style="display:flex;align-items:center;gap:8px;margin:6px 0 2px">'
+          +'<img style="width:52px;height:52px;object-fit:cover;border-radius:6px;border:0.5px solid #e2e8f0;cursor:pointer;flex-shrink:0" src="'+e.slip+'" onclick="openLightbox(this.src)" title="View slip"/>'
+          +'<a href="'+e.slip+'" download="slip-'+e.id+'.jpg" style="font-size:11px;padding:3px 9px;background:#eff6ff;color:#1d4ed8;border:0.5px solid #93c5fd;border-radius:4px;text-decoration:none">&#x2B07; Download slip</a>'
+          +'</div>')
+        :'';
+      return '<div class="card" style="border-left:3px solid '+(sub?sub.color:"#888")+';background:'+(e.status==="recorded"?"#f0fdf4":"#fff")+'">'
+        +'<div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:4px">'
+        +'<div style="display:flex;align-items:center;gap:6px">'+avatar(sub?sub.name:"?",sub?sub.color:"#888",24)
+        +'<span style="font-size:13px;font-weight:600;color:#1e293b">'+(sub?sub.name:"")+'</span>'
+        +'<span class="badge" style="background:#f1f5f9;color:#64748b">'+e.category+'</span></div>'
+        +'<span style="font-size:15px;font-weight:700;color:#1e293b">R '+e.amount.toFixed(2)+'</span></div>'
+        +'<p style="font-size:13px;color:#334155;margin-bottom:2px">'+e.description+'</p>'
+        +slipHtml
+        +'<div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:6px;margin-top:4px">'
+        +'<div><span style="font-size:11px;color:#94a3b8">'+fmt(e.weekend.date)+' - '+e.date+'</span>'
+        +'<span style="margin-left:8px;font-size:11px;font-weight:500;color:'+(e.status==="recorded"?"#166534":"#92400e")+'">'+(e.status==="recorded"?"Recorded":"Pending")+'</span></div>'
+        +'<div style="display:flex;gap:6px">'
+        +(canMark?'<button onclick="markExpense(\''+e.weekend.id+'\','+e.id+')" style="font-size:11px;padding:3px 8px;background:#059669;color:#fff;border:none;border-radius:4px">Mark recorded</button>':'')
+        +(canDel?'<button onclick="deleteExpense(\''+e.weekend.id+'\','+e.id+')" style="font-size:11px;padding:3px 8px;color:#dc2626;border-color:#fca5a5;background:#fff1f2;border-radius:4px">Delete</button>':'')
+        +'</div></div></div>';
+    }).join("");
+  return '<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px;flex-wrap:wrap;gap:8px">'
+    +'<div><p style="font-size:14px;font-weight:600;color:#1e293b">Expense claims</p>'
+    +'<p style="font-size:12px;color:#64748b;margin-top:2px">All expenses submitted by shareholders</p></div>'
+    +'<div style="display:flex;gap:6px;align-items:center">'
+    +(currentUser?'<button onclick="addExpenseModal()" style="font-size:12px;padding:5px 12px;background:#2D6F7A;color:#fff;border:none;font-weight:500">+ Add expense</button>':'')
+    +fBtns+'</div></div>'
+    +'<div class="summary-grid">'
+    +'<div class="summary-card" style="background:#fffbeb;border:1px solid #fcd34d"><p style="font-size:11px;color:#92400e">Pending claims</p><p style="font-size:20px;font-weight:600;color:#92400e;margin-top:4px">R '+pendingTotal.toFixed(2)+'</p></div>'
+    +'<div class="summary-card" style="background:#f0fdf4;border:1px solid #86efac"><p style="font-size:11px;color:#166534">Showing total</p><p style="font-size:20px;font-weight:600;color:#166534;margin-top:4px">R '+total.toFixed(2)+'</p></div>'
+    +'</div>'+rows;
+}
+
+function rulesTab(){
+  return '<div>'
+  +'<p style="font-size:14px;font-weight:600;color:#1e293b;margin-bottom:4px">Rules &amp; Labour Tips</p>'
+  +'<p style="font-size:12px;color:#64748b;margin-bottom:16px">Tipping guidelines for staff. Mon, Thu &amp; Fri are covered by their salary — only tip for extra days.</p>'
+
+  // Rates reference
+  +'<div style="background:#f8fafc;border:0.5px solid #e2e8f0;border-radius:10px;padding:12px 14px;margin-bottom:16px">'
+  +'<p style="font-size:12px;font-weight:600;color:#1e293b;margin-bottom:8px">Daily tip rates</p>'
+  +'<div style="display:grid;grid-template-columns:1fr 1fr;gap:6px">'
+  +'<div style="background:#fff;border-radius:6px;padding:8px 10px;border:0.5px solid #e2e8f0"><div style="font-size:13px;font-weight:500">Thomas</div><div style="font-size:12px;color:#059669;font-weight:600">R 150 / day</div></div>'
+  +'<div style="background:#fff;border-radius:6px;padding:8px 10px;border:0.5px solid #e2e8f0"><div style="font-size:13px;font-weight:500">Simon</div><div style="font-size:12px;color:#059669;font-weight:600">R 150 / day</div></div>'
+  +'<div style="background:#fff;border-radius:6px;padding:8px 10px;border:0.5px solid #e2e8f0"><div style="font-size:13px;font-weight:500">Sinah</div><div style="font-size:12px;color:#059669;font-weight:600">R 150 / day</div></div>'
+  +'<div style="background:#fff;border-radius:6px;padding:8px 10px;border:0.5px solid #e2e8f0"><div style="font-size:13px;font-weight:500">Sara</div><div style="font-size:11px;color:#64748b;margin-top:1px">Solo: R 200/day</div><div style="font-size:11px;color:#64748b">With Sinah: R 150/day</div></div>'
+  +'</div>'
+  +'<p style="font-size:11px;color:#94a3b8;margin-top:8px">&#x26A0; Mon, Thu &amp; Fri are salary days — no tip needed for those days.</p>'
+  +'</div>'
+
+
+  // Calculator
+  +'<div style="background:#EFF6FF;border:1px solid #BFDBFE;border-radius:10px;padding:14px;margin-bottom:16px">'
+  +'<p style="font-size:13px;font-weight:600;color:#1e40af;margin-bottom:10px">&#x1F4B0; Tip calculator</p>'
+  +'<p style="font-size:12px;color:#334155;margin-bottom:10px">Select the days you\'ll be at the farm:</p>'
+  +'<div style="display:grid;grid-template-columns:repeat(7,1fr);gap:4px;margin-bottom:12px">'
+  +['Mon','Tue','Wed','Thu','Fri','Sat','Sun'].map(function(d){
+    var id='tip-'+d.toLowerCase();
+    var isPaid=d==='Mon'||d==='Thu'||d==='Fri';
+    return '<label style="display:flex;flex-direction:column;align-items:center;gap:4px;cursor:pointer">'
+      +'<input type="checkbox" id="'+id+'" onchange="calcTips()" style="width:16px;height:16px;cursor:pointer"'+(isPaid?' title="Salary day"':'')+'/>'
+      +'<span style="font-size:11px;font-weight:500;color:'+(isPaid?'#94a3b8':'#334155')+'">'+d+'</span>'
+      +(isPaid?'<span style="font-size:9px;color:#94a3b8">salary</span>':'<span style="font-size:9px;color:#64748b">tip</span>')
+      +'</label>';
+  }).join('')
+  +'</div>'
+  +'<div style="display:flex;align-items:center;gap:8px;margin-bottom:12px;padding:8px 12px;background:#fff;border-radius:6px;border:0.5px solid #BFDBFE">'
+  +'<input type="checkbox" id="tip-sinah" onchange="calcTips()" style="width:16px;height:16px;cursor:pointer"/>'
+  +'<label for="tip-sinah" style="font-size:13px;color:#334155;cursor:pointer">Sinah is helping <span style="font-size:11px;color:#64748b">(affects Sara\'s rate)</span></label>'
+  +'</div>'
+  +'<div style="display:flex;align-items:center;gap:10px;margin-bottom:12px;padding:8px 12px;background:#fff;border-radius:6px;border:0.5px solid #fde68a">'
+  +'<span style="font-size:13px;color:#334155;flex:1">&#x1F4CD; Public holidays worked <span style="font-size:11px;color:#92400e;font-weight:500">(double pay)</span></span>'
+  +'<input type="number" id="tip-ph-days" min="0" max="7" value="0" onchange="calcTips()" style="width:55px;text-align:center;font-size:14px;font-weight:600;padding:5px 6px;border:0.5px solid #fcd34d;border-radius:6px;background:#fffbeb;color:#92400e"/>'
+  +'<span style="font-size:11px;color:#64748b">day(s)</span>'
+  +'</div>'
+  +'<div id="tip-result"><p style="font-size:13px;color:#64748b;text-align:center;padding:8px 0">Tick the days above to calculate tips.</p></div>'
+  +'</div>'
+
+  // WiFi
+  +'<p style="font-size:14px;font-weight:600;color:#1e293b;margin-bottom:10px;margin-top:4px">&#x1F4F6; WiFi</p>'
+  +'<div style="background:#EFF6FF;border:1px solid #BFDBFE;border-radius:10px;padding:1rem">'
+  +'<div style="display:flex;justify-content:space-between;align-items:center;background:#fff;border-radius:6px;padding:10px 12px;margin-bottom:8px"><span style="font-size:13px;color:#334155">Network</span><span style="font-size:13px;font-weight:600;color:#1e293b">Vodacom</span></div>'
+  +'<div style="display:flex;justify-content:space-between;align-items:center;background:#fff;border-radius:6px;padding:10px 12px;margin-bottom:8px"><span style="font-size:13px;color:#334155">Type</span><span style="font-size:13px;font-weight:600;color:#1e293b">Top up SIM card</span></div>'
+  +'<div style="display:flex;justify-content:space-between;align-items:center;background:#fff;border-radius:6px;padding:10px 12px;margin-bottom:8px"><span style="font-size:13px;color:#334155">Number to top up</span><a href="tel:0716036175" style="font-size:14px;font-weight:700;color:#1d4ed8;text-decoration:none">071 603 6175</a></div>'
+  +'<div style="display:flex;justify-content:space-between;align-items:center;background:#fff;border-radius:6px;padding:10px 12px"><span style="font-size:13px;color:#334155">WiFi Password</span><span style="font-size:13px;font-weight:700;color:#1e293b;font-family:monospace;letter-spacing:0.05em">go_outside</span></div>'
+  +'</div>'
+  +'</div>';
+}
+
+const MAINT_CATS=["Kitchen","Fishing","Entertainment","Vehicles","Gas & Fuel","Fencing","Stock","Labour","Other"];
+const KAREN={id:"karen-r",name:"Karen Robinson",color:"#0891B2",ini:"KR"};
+
+function mAvatar(person,sz){
+  sz=sz||28;
+  var o=person.id==="karen-r"?KAREN:OWNERS.find(function(x){return x.id===person.id;});
+  var color=o?o.color:"#888";
+  var ini=o?o.ini||o.name.split(" ").map(function(n){return n[0];}).join(""):"?";
+  return'<div style="width:'+sz+'px;height:'+sz+'px;background:'+color+';color:#fff;display:flex;align-items:center;justify-content:center;font-size:'+(sz<22?9:11)+'px;font-weight:700;flex-shrink:0">'+ini+'</div>';
+}
+
+function logMaintModal(){
+  if(!currentUser){showToast("Sign in first.","err");return;}
+  var catOpts=MAINT_CATS.map(function(c){return'<option>'+c+'</option>';}).join("");
+  var assignOpts=OWNERS.map(function(o){return'<option value="'+o.id+'">'+o.name+'</option>';}).join("")+'<option value="karen-r">Karen Robinson (Monthly orders)</option>';
+  openModal('<div class="modal wide"><div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:14px"><p style="font-weight:600;font-size:15px;color:#1e293b">Log maintenance issue</p><button onclick="closeModal()">Close</button></div><div style="display:flex;flex-direction:column;gap:10px"><div><label style="font-size:12px;color:#64748b;display:block;margin-bottom:4px">Category</label><select id="m-cat" style="width:100%">'+catOpts+'</select></div><div><label style="font-size:12px;color:#64748b;display:block;margin-bottom:4px">Description</label><textarea id="m-desc" rows="3" placeholder="e.g. Clutch handle broken on trail bike, Quad bike key lost..." style="width:100%;resize:none;font-size:13px;border:0.5px solid #cbd5e1;padding:8px;font-family:inherit"></textarea></div><div style="display:flex;gap:8px"><div style="flex:1"><label style="font-size:12px;color:#64748b;display:block;margin-bottom:4px">Priority</label><select id="m-pri" style="width:100%"><option value="urgent">🔴 Urgent</option><option value="normal" selected>🟡 Normal</option><option value="low">🟢 Low</option></select></div><div style="flex:1"><label style="font-size:12px;color:#64748b;display:block;margin-bottom:4px">Assign to</label><select id="m-assign" style="width:100%"><option value="">Unassigned</option>'+assignOpts+'</select></div></div><div style="display:flex;align-items:center;gap:8px;padding:8px 12px;background:#EFF6FF;border:0.5px solid #BFDBFE"><input type="checkbox" id="m-monthly" style="width:16px;height:16px"><label for="m-monthly" style="font-size:13px;color:#1e40af;cursor:pointer">📦 Add to monthly order list (auto-assigns to Karen)</label></div><div id=\"maint-slip-area\" style=\"border:1.5px dashed #cbd5e1;padding:12px;text-align:center;cursor:pointer;background:#f8fafc;margin-bottom:6px\" onclick=\"handleMaintPhotoClick()\"><div style=\"font-size:20px;margin-bottom:3px\">\U0001f4f7</div><p style=\"font-size:12px;color:#64748b;margin:0\">Tap to attach a damage photo (optional)</p></div><input type=\"file\" id=\"maint-slip-input\" accept=\"image/*\" capture=\"environment\" style=\"display:none\" onchange=\"handleMaintPhoto(this)\"><button onclick="saveMaintItem()" style="font-size:13px;padding:10px;background:#102D3A;color:#fff;border:none;font-weight:600;width:100%">Log issue</button></div></div>');
+  setTimeout(function(){var cb=document.getElementById("m-monthly");if(cb)cb.addEventListener("change",function(){if(this.checked)document.getElementById("m-assign").value="karen-r";});},50);
+}
+
+function handleMaintPhotoClick(){var el=document.getElementById("maint-slip-input");if(el)el.click();}
+function handleMaintPhoto(input){
+  var file=input.files[0];if(!file)return;
+  var reader=new FileReader();
+  reader.onload=function(ev){
+    window._maintPhoto=ev.target.result;
+    var area=document.getElementById("maint-slip-area");
+    if(area){
+      area.style.borderColor="#86efac";area.style.background="#f0fdf4";
+      area.innerHTML='<img src="'+window._maintPhoto+'" style="max-height:80px;max-width:100%;display:block;margin:0 auto 4px"/><p style="font-size:11px;color:#059669;margin:0">Photo attached ✓ Tap to change</p>';
+      area.onclick=function(){document.getElementById("maint-slip-input").click();};
+    }
+  };
+  reader.readAsDataURL(file);
+}
+async function saveMaintItem(){
+  var cat=document.getElementById("m-cat").value;
+  var desc=document.getElementById("m-desc")?document.getElementById("m-desc").value.trim():"";
+  var pri=document.getElementById("m-pri").value;
+  var assign=document.getElementById("m-assign").value;
+  var monthly=document.getElementById("m-monthly")&&document.getElementById("m-monthly").checked;
+  if(!desc){showToast("Please add a description.","err");return;}
+  if(monthly)assign="karen-r";
+  var loggedByOwner=OWNERS.find(function(o){return o.id===currentUser;});
+  var photo=window._maintPhoto||null;window._maintPhoto=null;var item={id:Date.now(),cat:cat,desc:desc,priority:pri,assignedTo:assign,monthly:monthly,loggedBy:currentUser,date:new Date().toLocaleString("en-ZA",{day:"numeric",month:"short",year:"numeric"}),status:"open",photo:photo};
+  var existing=STATE["__maint__"]||[];
+  STATE["__maint__"]=[...existing,item];
+  
+  closeModal();showToast("Issue logged!");
+  if(assign){var assignee=assign==="karen-r"?KAREN:OWNERS.find(function(o){return o.id===assign;});if(assignee&&loggedByOwner)sendPushNotification("🔧 Maintenance task assigned to you",cat+": "+desc+" — from "+loggedByOwner.name);}
+  currentTab="maintenance";render();
+}
+
+async function resolveMaint(id){STATE["__maint__"]=(STATE["__maint__"]||[]).map(function(m){return m.id===id?{...m,status:"resolved"}:m;});showToast("Marked as resolved ✓");render();}
+async function deleteMaint(id){STATE["__maint__"]=(STATE["__maint__"]||[]).filter(function(m){return m.id!==id;});render();}
+
+function maintenanceTab(items){
+  var filter=window._maintFilter||"open";
+  var filtered=filter==="all"?items:items.filter(function(m){return m.status===filter;});
+  var monthly=items.filter(function(m){return m.monthly&&m.status==="open";});
+  var openCount=items.filter(function(m){return m.status==="open";}).length;
+  var priC={urgent:"#FEE2E2",normal:"#FEF9C3",low:"#DCFCE7"};
+  var priT={urgent:"🔴 Urgent",normal:"🟡 Normal",low:"🟢 Low"};
+  var priB={urgent:"#FECACA",normal:"#FDE68A",low:"#86EFAC"};
+  var fBtns=["open","resolved","all"].map(function(f){return'<button onclick="window._maintFilter=\''+f+'\';render()" style="font-size:11px;padding:3px 10px;border-radius:20px;background:'+(filter===f?"#102D3A":"#f8fafc")+';color:'+(filter===f?"#fff":"#64748b")+';border-color:'+(filter===f?"#102D3A":"#cbd5e1")+'">'+(f==="open"?"Open ("+openCount+")":f.charAt(0).toUpperCase()+f.slice(1))+'</button>';}).join("");
+  var ms="";
+  if(monthly.length>0){
+    ms='<div style="background:#EFF6FF;border:1px solid #BFDBFE;padding:12px 14px;margin-bottom:14px">'
+      +'<div style="display:flex;align-items:center;gap:8px;margin-bottom:10px">'+mAvatar(KAREN,24)
+      +'<div><p style="font-size:13px;font-weight:600;color:#1e40af">Monthly order list</p><p style="font-size:11px;color:#3b82f6">Karen Robinson will organise</p></div></div>'
+      +monthly.map(function(m){return'<div style="display:flex;align-items:center;gap:8px;padding:7px 10px;background:#fff;margin-bottom:5px;border:0.5px solid #BFDBFE"><span style="font-size:11px;background:#DBEAFE;color:#1e40af;padding:1px 7px">'+m.cat+'</span><span style="font-size:13px;color:#1e293b;flex:1">'+m.desc+'</span>'+(currentUser===ADMIN_ID?'<button onclick="resolveMaint('+m.id+')" style="font-size:10px;padding:2px 7px;background:#059669;color:#fff;border:none">Done</button>':'')+'</div>';}).join("")
+      +'</div>';
+  }
+  var cards=filtered.length===0?'<div style="text-align:center;padding:2rem;color:#94a3b8;font-size:13px">No '+filter+' issues.</div>'
+    :[...filtered].sort(function(a,b){var p={urgent:0,normal:1,low:2};return(p[a.priority]||1)-(p[b.priority]||1)||(b.id-a.id);}).map(function(m){
+      var lb=OWNERS.find(function(o){return o.id===m.loggedBy;});
+      var ae=m.assignedTo==="karen-r"?KAREN:(m.assignedTo?OWNERS.find(function(o){return o.id===m.assignedTo;}):null);
+      var canDel=m.loggedBy===currentUser||currentUser===ADMIN_ID;
+      return'<div style="background:'+(m.status==="resolved"?"#f0fdf4":"#fff")+';border:1px solid #e2e8f0;padding:10px 12px;margin-bottom:8px;border-left:3px solid '+(priB[m.priority]||"#e2e8f0")+'">'
+        +'<div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:6px">'
+        +'<div style="display:flex;align-items:center;gap:5px;flex-wrap:wrap">'
+        +'<span style="font-size:11px;background:#f1f5f9;color:#475569;padding:2px 8px">'+m.cat+'</span>'
+        +'<span style="font-size:11px;background:'+priC[m.priority]+';padding:2px 8px">'+priT[m.priority]+'</span>'
+        +(m.monthly?'<span style="font-size:11px;background:#DBEAFE;color:#1e40af;padding:2px 8px">📦 Monthly</span>':"")
+        +(m.status==="resolved"?'<span style="font-size:11px;background:#DCFCE7;color:#166534;padding:2px 8px">✓ Resolved</span>':"")
+        +'</div><span style="font-size:10px;color:#94a3b8">'+(m.date||'')+'</span></div>'
+        +'<p style="font-size:13px;color:#1e293b;margin-bottom:8px;line-height:1.5">'+m.desc+'</p>'+(m.photo?'<div style="margin-bottom:8px"><img src="'+m.photo+'" onclick="openLightbox(this.src)" style="max-height:80px;max-width:120px;object-fit:cover;cursor:pointer;border:0.5px solid #e2e8f0"/></div>':"")
+        +'<div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:6px">'
+        +'<div style="display:flex;align-items:center;gap:6px">'
+        +(lb?mAvatar({id:lb.id,color:lb.color,ini:lb.name.split(" ").map(function(n){return n[0];}).join("")},20)+'<span style="font-size:11px;color:#64748b">'+lb.name+'</span>':"")
+        +(ae?'<span style="font-size:11px;color:#94a3b8">→</span>'+mAvatar(ae,20)+'<span style="font-size:11px;color:#2D6F7A;font-weight:500">'+ae.name+'</span>':"")
+        +'</div><div style="display:flex;gap:5px">'
+        +(m.status==="open"&&currentUser===ADMIN_ID?'<button onclick="resolveMaint('+m.id+')" style="font-size:10px;padding:2px 8px;background:#059669;color:#fff;border:none">Mark resolved</button>':"")
+        +(canDel?'<button onclick="editMaintModal('+m.id+')" style="font-size:10px;padding:2px 8px;background:#EFF6FF;color:#1e40af;border-color:#BFDBFE">Edit</button>':"")
+        +(canDel&&m.status==="resolved"?'<button onclick="deleteMaint('+m.id+')" style="font-size:10px;padding:2px 8px;color:#dc2626;border-color:#fca5a5;background:#fff1f2">Delete</button>':"")
+        +'</div></div></div>';
+    }).join("");
+  return'<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;flex-wrap:wrap;gap:8px">'
+    +'<div><p style="font-size:14px;font-weight:600;color:#1e293b">Maintenance</p>'
+    +'<p style="font-size:12px;color:#64748b;margin-top:2px">Log issues, breakages and supply requests</p></div>'
+    +(currentUser?'<button onclick="logMaintModal()" style="font-size:12px;padding:6px 14px;background:#102D3A;color:#fff;border:none;font-weight:500">+ Log issue</button>':"")
+    +'</div><div style="display:flex;gap:5px;margin-bottom:12px">'+fBtns+'</div>'+ms+cards;
+}
+
+function contactsTab(){
+  var contacts=[
+    {name:"Thomas",role:"Farm Manager",phone:"0727069781",emoji:"👨‍🌾",color:"#2D6F7A"},
+    {name:"Karen Robinson",role:"Monthly orders",phone:"",emoji:"📦",color:"#0891B2"},
+  ];
+  var cards=contacts.map(function(c){
+    return'<div style="background:#fff;border:1px solid #e2e8f0;padding:12px 14px;margin-bottom:8px;display:flex;align-items:center;gap:14px">'
+      +'<div style="width:44px;height:44px;background:'+c.color+';color:#fff;display:flex;align-items:center;justify-content:center;font-size:20px;flex-shrink:0">'+c.emoji+'</div>'
+      +'<div style="flex:1">'
+      +'<p style="font-size:14px;font-weight:600;color:#1e293b">'+c.name+'</p>'
+      +'<p style="font-size:12px;color:#64748b;margin-top:1px">'+c.role+'</p>'
+      +'</div>'
+      +(c.phone?'<a href="tel:'+c.phone+'" style="display:flex;flex-direction:column;align-items:center;gap:3px;text-decoration:none;background:#E8F4F6;border:1px solid #B5D8DE;padding:8px 12px;color:#102D3A">'
+        +'<span style="font-size:18px">📞</span>'
+        +'<span style="font-size:10px;font-weight:600;color:#2D6F7A">Call</span>'
+        +'</a>'
+        +'<a href="https://wa.me/27'+c.phone.replace(/^0/,'')+'" target="_blank" style="display:flex;flex-direction:column;align-items:center;gap:3px;text-decoration:none;background:#dcfce7;border:1px solid #86efac;padding:8px 12px;color:#166534;margin-left:6px">'
+        +'<span style="font-size:18px">💬</span>'
+        +'<span style="font-size:10px;font-weight:600;color:#166534">WhatsApp</span>'
+        +'</a>'
+      :'')
+      +'</div>';
+  }).join("");
+
+  var addSection=currentUser===ADMIN_ID
+    ?'<div style="background:#f8fafc;border:1px dashed #cbd5e1;padding:12px 14px;margin-bottom:16px;text-align:center">'
+      +'<p style="font-size:12px;color:#64748b">Contact list is managed by admin. Coming soon — add contacts from here.</p>'
+      +'</div>'
+    :"";
+
+  return'<div style="margin-bottom:14px">'
+    +'<p style="font-size:14px;font-weight:600;color:#1e293b;margin-bottom:3px">Farm contacts</p>'
+    +'<p style="font-size:12px;color:#64748b">Key people for the Stonegate Farm</p>'
+    +'</div>'
+    +addSection
+    +cards
+    +'<div style="background:#fffbeb;border:1px solid #fde68a;padding:10px 14px;margin-top:8px">'
+    +'<p style="font-size:12px;color:#92400e">📍 <strong>Stonegate Farm</strong> — Private Estate</p>'
+    +'<p style="font-size:11px;color:#92400e;margin-top:3px">For emergencies: contact the nearest shareholder or Thomas directly.</p>'
+    +'</div>';
+}
+
+function editMaintModal(id){
+  var m=(STATE["__maint__"]||[]).find(function(x){return x.id===id;});
+  if(!m){return;}
+  var catOpts=MAINT_CATS.map(function(c){return'<option value="'+c+'"'+(m.cat===c?' selected':'')+'>'+c+'</option>';}).join("");
+  var assignOpts='<option value="">Unassigned</option>'
+    +OWNERS.map(function(o){return'<option value="'+o.id+'"'+(m.assignedTo===o.id?' selected':'')+'>'+o.name+'</option>';}).join("")
+    +'<option value="karen-r"'+(m.assignedTo==="karen-r"?' selected':'')+'>Karen Robinson (Monthly orders)</option>';
+  openModal('<div class="modal wide"><div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:14px"><p style="font-weight:600;font-size:15px;color:#1e293b">Edit issue</p><button onclick="closeModal()">Close</button></div><div style="display:flex;flex-direction:column;gap:10px"><div><label style="font-size:12px;color:#64748b;display:block;margin-bottom:4px">Category</label><select id="em-cat" style="width:100%">'+catOpts+'</select></div><div><label style="font-size:12px;color:#64748b;display:block;margin-bottom:4px">Description</label><textarea id="em-desc" rows="3" style="width:100%;resize:none;font-size:13px;border:0.5px solid #cbd5e1;padding:8px;font-family:inherit">'+m.desc+'</textarea></div><div style="display:flex;gap:8px"><div style="flex:1"><label style="font-size:12px;color:#64748b;display:block;margin-bottom:4px">Priority</label><select id="em-pri" style="width:100%"><option value="urgent"'+(m.priority==="urgent"?" selected":"")+'>🔴 Urgent</option><option value="normal"'+(m.priority==="normal"?" selected":"")+'>🟡 Normal</option><option value="low"'+(m.priority==="low"?" selected":"")+'>🟢 Low</option></select></div><div style="flex:1"><label style="font-size:12px;color:#64748b;display:block;margin-bottom:4px">Assign to</label><select id="em-assign" style="width:100%">'+assignOpts+'</select></div></div><div style="display:flex;align-items:center;gap:8px;padding:8px 12px;background:#EFF6FF;border:0.5px solid #BFDBFE"><input type="checkbox" id="em-monthly"'+(m.monthly?" checked":"")+' style="width:16px;height:16px"><label for="em-monthly" style="font-size:13px;color:#1e40af;cursor:pointer">📦 Monthly order list (Karen)</label></div><button onclick="saveEditMaint('+id+')" style="font-size:13px;padding:10px;background:#102D3A;color:#fff;border:none;font-weight:600;width:100%">Save changes</button></div></div>');
+  setTimeout(function(){var cb=document.getElementById("em-monthly");if(cb)cb.addEventListener("change",function(){if(this.checked)document.getElementById("em-assign").value="karen-r";});},50);
+}
+
+async function saveEditMaint(id){
+  var cat=document.getElementById("em-cat").value;
+  var desc=document.getElementById("em-desc")?document.getElementById("em-desc").value.trim():"";
+  var pri=document.getElementById("em-pri").value;
+  var assign=document.getElementById("em-assign").value;
+  var monthly=document.getElementById("em-monthly")&&document.getElementById("em-monthly").checked;
+  if(!desc){showToast("Please add a description.","err");return;}
+  if(monthly)assign="karen-r";
+  STATE["__maint__"]=(STATE["__maint__"]||[]).map(function(m){
+    return m.id===id?{...m,cat:cat,desc:desc,priority:pri,assignedTo:assign,monthly:monthly}:m;
+  });
+  
+  closeModal();showToast("Issue updated!");render();
+}
+
+function render(){if(showCover){renderCover();return;}const availList=ALL_WEEKENDS.filter(w=>getS(w.id).available&&w.date>=today);const mineList=currentUser?ALL_WEEKENDS.filter(w=>effOwner(w.id)===currentUser&&w.date>=today):[];const allExp=ALL_WEEKENDS.flatMap(w=>(getS(w.id).expenses||[]).map(e=>({...e,weekend:w})));const pendingExpCount=allExp.filter(e=>e.status==="pending").length;const forumPosts=STATE["__forum__"]||[];
+  const maintItems=(STATE["__maint__"]||[]);
+  const pendingMaint=maintItems.filter(m=>m.status==="open").length;const filteredList=ALL_WEEKENDS.filter(w=>{if(w.date<today)return false;if(filterOwner!=="all"&&effOwner(w.id)!==filterOwner)return false;if(filterYear!=="all"&&!w.date.startsWith(filterYear))return false;return true;});const ownerObj=OWNERS.find(o=>o.id===currentUser);const pills=OWNERS.map(o=>'<button class="pill" onclick="handlePillClick(\''+o.id+'\')" style="background:'+(currentUser===o.id?o.color:"transparent")+';color:'+(currentUser===o.id?"#fff":"#64748b")+';border-color:'+(currentUser===o.id?o.color:"#cbd5e1")+'">'+o.name.split(" ")[0]+'</button>').join("");const userBar=currentUser?'<div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap">'+avatar(ownerObj.name,ownerObj.color,30)+'<span style="font-size:13px;font-weight:600">'+ownerObj.name+'</span>'+(currentUser===ADMIN_ID?'<button onclick="adminModal()" style="font-size:12px;padding:3px 8px;background:#fef3c7;color:#92400e;border:0.5px solid #fcd34d">Admin</button>':"")+'<button onclick="currentUser=null;showCover=false;currentUser="steve";renderCover()" style="font-size:12px;padding:3px 8px">Sign out</button></div>':"";function tabBtn(id,label){return'<button class="tab'+(currentTab===id?" active":"")+'" onclick="currentTab=\''+id+'\';render()">'+label+'</button>';}let tabContent="";if(currentTab==="all"){const yO=["2025","2026","2027","2028","2029","2030"].map(y=>'<option value="'+y+'"'+(filterYear===y?" selected":"")+'>'+y+'</option>').join("");const oO=OWNERS.map(o=>'<option value="'+o.id+'"'+(filterOwner===o.id?" selected":"")+'>'+o.name+'</option>').join("");tabContent='<div class="filters"><select onchange="filterOwner=this.value;render()"><option value="all">All owners</option>'+oO+'</select><select onchange="filterYear=this.value;render()"><option value="all">All years</option>'+yO+'</select><span style="font-size:12px;color:#64748b">'+filteredList.length+' weekends</span></div>'+filteredList.map(w=>weekendCard(w)).join("");}else if(currentTab==="mine"){tabContent=currentUser?mineList.length?mineList.map(w=>weekendCard(w)).join(""):emptyMsg("No upcoming weekends assigned to you."):emptyMsg("Tap your name above to sign in.");}else if(currentTab==="avail"){tabContent=availList.length?'<div style="background:#EFF6FF;border:1px solid #BFDBFE;padding:10px 14px;margin-bottom:14px"><p style="font-size:13px;font-weight:600;color:#1e40af;margin-bottom:2px">First come, first served</p><p style="font-size:12px;color:#3b82f6;line-height:1.5">Push notifications are sent to everyone when a weekend is released. Sign in and claim it before someone else does.</p></div>'+availList.map(w=>weekendCard(w,true)).join(""):emptyMsg("No weekends available right now.");}else if(currentTab==="expenses"){tabContent=expensesTab(allExp);}else if(currentTab==="forum"){tabContent=forumTab(forumPosts);}else if(currentTab==="rules"){tabContent=rulesTab();}
+  else if(currentTab==="maintenance"){tabContent=maintenanceTab(maintItems);}else if(currentTab==="contacts"){tabContent=contactsTab();}document.getElementById("app").innerHTML='<div class="header"><div style="display:flex;align-items:flex-start;justify-content:space-between;gap:8px;margin-bottom:10px;flex-wrap:wrap"><div><h1>&#x1F3A3; Stonegate Farm</h1><div class="header-sub"><span>Weekend allocation 2025-2030</span><span class="live '+(syncing?"saving":"ok")+'">'+(syncing?"Saving...":lastSync?"Live":"")+'</span></div></div>'+userBar+'</div><div class="owner-pills">'+pills+'</div><div class="tabs">'+tabBtn("all","All weekends")+tabBtn("mine","My weekends"+(currentUser?" ("+mineList.length+")":""))+tabBtn("avail","Available"+(availList.length>0?" - "+availList.length:""))+tabBtn("expenses","Expenses"+(pendingExpCount>0?" - "+pendingExpCount:""))+tabBtn("forum","Forum")+tabBtn("rules","Rules")+tabBtn("maintenance","Maintenance"+(pendingMaint>0?" · "+pendingMaint:""))+tabBtn("contacts","Contacts")+'</div></div><div class="content">'+tabContent+'</div>';}
+render();
+
+</script>
+</body>
+</html>
